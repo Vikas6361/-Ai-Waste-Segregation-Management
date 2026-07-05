@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EcoSort Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #16a34a;
+      --primary-soft: #dcfce7;
+      --primary-dark: #15803d;
+      --accent: #0ea5e9;
+      --bg-page: #f5f7fb;
+      --text-main: #0f172a;
+      --text-muted: #6b7280;
+      --card-radius: 18px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* NAVBAR – matches EcoSort look */
+    .top-nav {
+      background: #ffffff;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--primary-dark);
+      text-decoration: none;
+    }
+
+    .brand-logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+
+    .nav-link-custom {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-right: 18px;
+    }
+
+    .nav-link-custom:hover {
+      color: var(--primary-dark);
+    }
+
+    .nav-username {
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-right: 16px;
+    }
+
+    .btn-logout {
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: none;
+      background: #f97373;
+      color: #fff;
+    }
+
+    .btn-logout:hover {
+      background: #ef4444;
+    }
+
+    /* PAGE WRAPPER */
+    .dashboard-wrapper {
+      flex: 1;
+      padding: 32px 16px 24px;
+    }
+
+    @media (min-width: 992px) {
+      .dashboard-wrapper {
+        padding: 40px 60px 32px;
+      }
+    }
+
+    .page-heading {
+      margin-bottom: 14px;
+    }
+
+    .page-heading h2 {
+      font-weight: 700;
+      font-size: 1.7rem;
+      margin: 0;
+    }
+
+    .page-heading p {
+      margin: 2px 0 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* STATS CARDS ROW */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin: 22px 0 26px;
+    }
+
+    @media (min-width: 992px) {
+      .stats-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border-radius: var(--card-radius);
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .stat-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .stat-chip {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    .stat-accent {
+      color: var(--primary);
+    }
+
+    /* MAIN CONTENT GRID */
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 991.98px) {
+      .main-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card-panel {
+      background: #ffffff;
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow-soft);
+      padding: 20px 18px 18px;
+      height: 100%;
+    }
+
+    .card-panel h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-panel h4 i {
+      color: var(--primary);
+    }
+
+    /* UPLOAD AREA */
+    .upload-area {
+      border: 2px dashed #d1e4ff;
+      border-radius: 14px;
+      padding: 34px 16px;
+      text-align: center;
+      background: #f9fbff;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s;
+    }
+
+    .upload-area:hover {
+      border-color: var(--accent);
+      background: #eef6ff;
+      transform: translateY(-1px);
+    }
+
+    .upload-area-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+      color: var(--accent);
+      font-size: 1.6rem;
+    }
+
+    .upload-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .upload-btn-group {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-pill-primary {
+      border-radius: 999px;
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      font-weight: 500;
+      padding: 9px 18px;
+      font-size: 0.9rem;
+    }
+
+    .btn-pill-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-pill-outline {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      padding: 9px 18px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .btn-pill-outline:hover {
+      background: #f3f4f6;
+    }
+
+    .camera-wrapper {
+      margin-top: 14px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+
+    /* RESULT CARD */
+    #resultCard {
+      background: #f9fafb;
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    #resultCard h5 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .top-type-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .top-badge {
+      font-weight: 600;
+      color: var(--accent);
+      margin-left: 4px;
+    }
+
+    .prob-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+
+    .prob-label {
+      min-width: 90px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .prob-bar {
+      flex: 1;
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e5e7eb;
+    }
+
+    .prob-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    /* RADIUS + MODE SECTION */
+    .radius-block {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .radius-block .form-select {
+      max-width: 160px;
+      font-size: 0.9rem;
+    }
+
+    .mode-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* MAP + CENTER LIST */
+    #mainMap {
+      height: 320px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      overflow: hidden;
+    }
+
+    #centerList {
+      margin-top: 14px;
+      max-height: 210px;
+      overflow-y: auto;
+    }
+
+    .center-card {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    .center-card strong {
+      font-size: 0.95rem;
+    }
+
+    .center-card small {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    .center-card a {
+      font-size: 0.82rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .center-card a:hover {
+      text-decoration: underline;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #020617;
+      color: #e5e5e5;
+      padding: 14px 18px;
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="top-nav">
+    <div class="container-fluid px-3 px-lg-5 py-2 d-flex align-items-center justify-content-between">
+      <a href="/" class="brand-logo">
+        <span class="brand-logo-icon">
+          <i class="fas fa-recycle"></i>
+        </span>
+        <span>EcoSort</span>
+      </a>
+
+      <div class="d-none d-md-flex align-items-center">
+        <a href="/" class="nav-link-custom">Home</a>
+        <a href="/#awareness" class="nav-link-custom">Awareness</a>
+        <a href="/#features" class="nav-link-custom">Features</a>
+        <span class="nav-username">Hi, <%= user.username %></span>
+        <a href="/login" class="btn-logout">Logout</a>
+      </div>
+
+      <!-- mobile user text only -->
+      <div class="d-md-none small fw-semibold text-success">
+        <i class="fas fa-user-circle me-1"></i><%= user.username %>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-wrapper">
+    <!-- Heading -->
+    <div class="page-heading">
+      <h2>Welcome back, <%= user.username %> 👋</h2>
+      <p>Track your impact and classify waste items with AI-powered insights.</p>
+    </div>
+
+    <!-- Stats cards -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Scans</div>
+        <div class="stat-value">
+          <span id="totalCount"><%= stats.total %></span>
+        </div>
+        <div class="stat-sub">Combined scans made using your account.</div>
+        <div class="stat-chip">Live</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Accuracy</div>
+        <div class="stat-value stat-accent">
+          <span><%= stats.accuracy %></span>
+        </div>
+        <div class="stat-sub">Model performance based on latest tests.</div>
+        <div class="stat-chip"><i class="fas fa-arrow-trend-up me-1"></i>Model</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Centers Found</div>
+        <div class="stat-value" style="color:#2563eb;">
+          <span><%= stats.centers %></span>
+        </div>
+        <div class="stat-sub">Verified recycling facilities near users.</div>
+        <div class="stat-chip"><i class="fas fa-location-dot me-1"></i>Nearby</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">Impact Score</div>
+        <div class="stat-value" style="color:#f97316;">
+          <span><%= stats.satisfaction %></span>
+        </div>
+        <div class="stat-sub">User satisfaction & eco-impact indicator.</div>
+        <div class="stat-chip"><i class="fas fa-leaf me-1"></i>Green</div>
+      </div>
+    </div>
+
+    <!-- Main content: upload + map -->
+    <div class="main-grid">
+      <!-- LEFT: Upload / camera / result -->
+      <div class="card-panel">
+        <h4>
+          <i class="fas fa-trash-arrow-up"></i>
+          Classify Waste
+        </h4>
+
+        <!-- Upload Area -->
+        <div class="upload-area" id="uploadArea">
+          <div class="upload-area-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <h5 class="mb-1">Click or drag to upload</h5>
+          <p class="upload-sub">Supported formats: JPG, PNG, GIF</p>
+          <input type="file" id="fileInput" accept="image/*" style="display:none;">
+
+          <div class="upload-btn-group">
+            <button class="btn-pill-primary" id="uploadBtn">
+              <i class="fas fa-file-arrow-up me-1"></i> Select Image
+            </button>
+            <button class="btn-pill-outline" id="cameraBtn">
+              <i class="fas fa-camera me-1"></i> Take Photo
+            </button>
+          </div>
+        </div>
+
+        <!-- Camera preview -->
+        <div id="cameraContainer" style="display:none;margin-top:16px;">
+          <div class="camera-wrapper">
+            <video id="camera" width="100%" height="260" autoplay playsinline style="background:#000;"></video>
+          </div>
+          <div class="mt-2 d-flex flex-wrap gap-2">
+            <button class="btn btn-sm btn-danger" id="captureBtn">
+              <i class="fas fa-circle-stop me-1"></i> Capture
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" id="closeCameraBtn">Close</button>
+          </div>
+          <canvas id="cameraCanvas" style="display:none;"></canvas>
+        </div>
+
+        <!-- Result -->
+        <div id="resultCard" style="display:none;margin-top:18px;">
+          <h5>
+            <i class="fas fa-robot text-primary me-2"></i>
+            AI Classification
+          </h5>
+          <img id="resultImage" class="img-fluid rounded mb-2" style="max-height:200px; object-fit:cover; width:100%;">
+          <p class="mb-2">
+            <span class="top-type-pill">
+              <span id="topType"></span>
+              <span id="topBadge" class="top-badge"></span>
+            </span>
+          </p>
+
+          <div id="probList" class="mb-2"></div>
+
+          <p class="mb-1"><strong>Disposal Guidance:</strong></p>
+          <p id="disposalGuidance" style="font-size:0.9rem; color:var(--text-muted);"></p>
+        </div>
+      </div>
+
+      <!-- RIGHT: Map + centers list -->
+      <div class="card-panel">
+        <h4>
+          <i class="fas fa-map-location-dot"></i>
+          Nearby Recycling Centers
+        </h4>
+        <div id="centerList" class="small text-muted text-center" style="margin-top: 14px;">
+          No data yet — upload an image to see centers near you.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 EcoSort | Developed by Vikas &amp; Team
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JS LOGIC -->
+  <script>
+    // -------- state
+    let cameraStream = null;
+
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const closeCameraBtn = document.getElementById('closeCameraBtn');
+    const cameraContainer = document.getElementById('cameraContainer');
+    const videoEl = document.getElementById('camera');
+    const canvasEl = document.getElementById('cameraCanvas');
+    const resultCard = document.getElementById('resultCard');
+    const resultImage = document.getElementById('resultImage');
+    const topType = document.getElementById('topType');
+    const topBadge = document.getElementById('topBadge');
+    const disposalGuidance = document.getElementById('disposalGuidance');
+    const probList = document.getElementById('probList');
+    const totalCount = document.getElementById('totalCount');
+
+    // ---------- file + camera flows
+    const handleFileClick = (e) => {
+        e.stopPropagation(); // Prevents the click from firing twice
+        fileInput.value = ''; // Reset input to allow re-uploading the same file
+        fileInput.click();
+    };
+
+    uploadBtn.addEventListener('click', handleFileClick);
+    document.getElementById('uploadArea').addEventListener('click', handleFileClick);
+
+    fileInput.addEventListener('change', async (e) => {
+      if (!e.target.files?.length) return;
+      await processImage(e.target.files[0]);
+    });
+
+    cameraBtn.addEventListener('click', async () => {
+      try {
+        cameraContainer.style.display = 'block';
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'environment' }});
+        videoEl.srcObject = cameraStream; videoEl.play();
+      } catch (err) { alert('Camera access denied or not available.'); }
+    });
+    
+    closeCameraBtn.addEventListener('click', stopCamera);
+
+    function stopCamera(){
+      cameraContainer.style.display = 'none';
+      if (cameraStream) { cameraStream.getTracks().forEach(t=>t.stop()); cameraStream=null; }
+      videoEl.pause(); videoEl.srcObject=null;
+    }
+
+    // ---------- process image, call Node -> Node calls Flask
+    async function processImage(file) {
+      resultImage.src = URL.createObjectURL(file);
+      resultCard.style.display = 'block';
+
+      const form = new FormData();
+      form.append('wasteImage', file);
+      form.append('username', "<%= user.username %>");
+
+      try {
+        const r = await fetch('/api/waste/classify', { method:'POST', body: form });
+        const data = await r.json();
+        if (!data.success) { alert('Classification failed: '+(data.message||'unknown')); return; }
+
+        disposalGuidance.textContent = data.guidance;
+        topType.textContent = data.classification;
+        topBadge.textContent = `(${data.recyclingPotential}%)`;
+
+        renderProbabilities(data.scores || []);
+
+        if(data.classification !== "Unclear") {
+             totalCount.textContent = (parseInt(totalCount.textContent||'0',10) + 1);
+        }
+
+        displayCenters(data.nearbyCenters || []);
+      } catch (err) {
+        console.error(err);
+        alert('Error connecting to server. See console.');
+      }
+    }
+
+    // ---------- render probs
+    function renderProbabilities(scores) {
+      probList.innerHTML = '';
+      if (!scores || !scores.length) return;
+      scores.sort((a,b)=>b.score-a.score);
+      scores.forEach((s) => {
+        const pct = Math.round(s.score * 100);
+        const row = document.createElement('div');
+        row.className = 'prob-row';
+        row.innerHTML = `
+          <div class="prob-label">${escapeHtml(s.label)}</div>
+          <div class="prob-bar"><div class="prob-fill" style="width:${pct}%"></div></div>
+          <div style="min-width:46px;text-align:right"><strong>${pct}%</strong></div>
+        `;
+        probList.appendChild(row);
+      });
+    }
+
+    // ---------- display centers
+    function displayCenters(centers) {
+      const list = document.getElementById('centerList'); list.innerHTML = '';
+      if (!centers || centers.length===0) {
+        list.innerHTML = '<p class="text-danger mb-0">No nearby centers found for this category.</p>';
+        return;
+      }
+      centers.forEach(c => {
+        list.innerHTML += `
+          <div class="center-card">
+            <strong>${escapeHtml(c.name)}</strong><br/>
+            <small>${escapeHtml(c.address||'')}</small><br/>
+            <a href="${c.map}" target="_blank">View details</a>
+          </div>`;
+      });
+    }
+
+    function escapeHtml(t){ if(!t) return ''; return (''+t).replace(/[&<>"']/g, s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+  </script>
+</body>
+</html>
