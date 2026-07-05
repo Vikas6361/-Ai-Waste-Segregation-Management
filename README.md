@@ -1,0 +1,1 @@
+# -Ai-Waste-Segregation-Management
