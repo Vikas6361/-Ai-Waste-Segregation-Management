@@ -15,7 +15,8 @@ const MOCK_CENTERS = {
 
 exports.getPrediction = async (fileBuffer, originalName, mimetype) => {
     const base64 = fileBuffer.toString('base64');
-    const flaskUrl = process.env.FLASK_API_URL || 'http://127.0.0.1:5000/predict';
+    // Updated fallback URL
+    const flaskUrl = process.env.FLASK_API_URL || 'https://ai-waste-segregation-management-3.onrender.com/predict';
 
     try {
         const response = await axios.post(flaskUrl, {
@@ -24,7 +25,7 @@ exports.getPrediction = async (fileBuffer, originalName, mimetype) => {
             mimetype: mimetype
         }, {
             headers: { 'Content-Type': 'application/json' },
-            timeout: 20000 
+            timeout: 120000 // Increased from 20000 to 120000 (120 seconds)
         });
 
         const data = response.data;
@@ -33,6 +34,7 @@ exports.getPrediction = async (fileBuffer, originalName, mimetype) => {
         return data;
     } catch (error) {
         console.error('❌ AI Service Error: Could not reach Flask server.', error.message);
-        throw new Error('AI Model server is offline. Please ensure flask_server.py is running on port 5000.');
+        // Updated error message to be accurate for production
+        throw new Error('AI Model server timed out or is offline. Please try again in a moment.');
     }
 };
