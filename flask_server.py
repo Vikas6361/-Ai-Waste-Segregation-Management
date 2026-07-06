@@ -4,6 +4,7 @@ import tflite_runtime.interpreter as tflite
 import numpy as np
 import io, base64
 from PIL import Image
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -15,7 +16,6 @@ print("⏳ Loading TFLite model from", MODEL_PATH)
 interpreter = tflite.Interpreter(model_path=MODEL_PATH)
 interpreter.allocate_tensors()
 
-# Get input and output layer details
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
@@ -30,7 +30,7 @@ def predict():
         if not data or 'file' not in data:
             return jsonify({"success": False, "message": "No file provided"}), 400
 
-        # Process the image
+        # Decode and process the image
         img_b64 = data['file']
         img_bytes = base64.b64decode(img_b64)
         img = Image.open(io.BytesIO(img_bytes)).convert('RGB').resize((224,224))
@@ -60,7 +60,7 @@ def predict():
             return jsonify({
                 "success": True,
                 "classification": "Unclear",
-                "guidance": "Confidence is too low. Please upload a clearer image of the waste.",
+                "guidance": "Confidence is too low. Please upload a clearer image.",
                 "recyclingPotential": round(top_conf, 2),
                 "scores": scores
             })
@@ -84,7 +84,5 @@ def predict():
         return jsonify({"success": False, "message": str(e)}), 500
 
 if __name__ == '__main__':
-    # Using Render's dynamic port or default to 10000
-    import os
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port, debug=False)
